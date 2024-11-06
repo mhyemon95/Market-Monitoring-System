@@ -59,6 +59,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # Seller & Wholesaler Specific Fields
+    business_name = models.CharField(max_length=255, blank=True, null=True)
+    business_registration_number = models.CharField(max_length=50, blank=True, null=True)
+    gst_number = models.CharField(max_length=20, blank=True, null=True)
+    wholesale_license_number = models.CharField(max_length=50, blank=True, null=True)
+    warehouse_address = models.TextField(blank=True, null=True)
+
+
     objects = UserManager()
 
     EMAIL_FIELD = "email"
