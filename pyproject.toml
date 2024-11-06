@@ -9,5 +9,8 @@ authors = ["Team Hack Titans"]
 requires-python = ">=3.8,<4.0"
 
 dependencies =[
+    "django-environ>=0.11.2",
+    "django-resized>=1.0.3",
     "django>=4.2.16",
+    "pillow>=10.4.0",
 ]
