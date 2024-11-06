@@ -1,0 +1,11 @@
+{% autoescape off %}
+
+Hello {{ name }}
+
+Welcome to Cyber Bnagla! In order to complete the sign-up process and make use of your account, please click on the confirmation link.
+
+
+Confirmation Link: http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+
+
+{% endautoescape %}
