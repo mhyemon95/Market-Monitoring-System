@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .profile-container {
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            max-width: 400px;
+            margin: auto;
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        .profile-info {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="profile-container">
+    <h2>User Profile</h2>
+    <div class="profile-info">
+        <strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}
+    </div>
+    <div class="profile-info">
+        <strong>Email:</strong> {{ user.email }}
+    </div>
+    <div class="profile-info">
+        <strong>Role:</strong> {{ user.get_role_display }}
+    </div>
+    <div class="profile-info">
+        <strong>Contact Number:</strong> {{ user.contact_number }}
+    </div>
+    <div class="profile-info">
+        <strong>Bio:</strong> {{ user.bio }}
+    </div>
+</div>
+
+</body>
+</html>

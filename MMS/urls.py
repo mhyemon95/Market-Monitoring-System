@@ -16,16 +16,4 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include  # Include 'include' to reference app URLs
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('apps.dashboard.urls')),  # Connect dashboard URLs to the main project
-]
-
-
-
-
-
-
 
