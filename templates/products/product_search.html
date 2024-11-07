@@ -1,0 +1,31 @@
+<!-- products/templates/products/product_search.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Products</title>
+</head>
+<body>
+    <h1>Search Products</h1>
+    <form method="get" action="{% url 'product_search' %}">
+        {{ form.as_p }}
+        <button type="submit">Search</button>
+    </form>
+    
+    <h2>Search Results</h2>
+    <ul>
+        {% for product in products %}
+            <li>
+                <h3>{{ product.title }}</h3>
+                <p>{{ product.description }}</p>
+                <p>Price: ${{ product.price }}</p>
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.title }}" width="100">
+                {% endif %}
+            </li>
+        {% empty %}
+            <p>No products found.</p>
+        {% endfor %}
+    </ul>
+</body>
+</html>
