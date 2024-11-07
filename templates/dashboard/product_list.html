@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product List</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        body {
+    background-color: #f7f7f7;
+}
+
+#navbar {
+    background-color: #39546E;
+    color: black;
+}
+
+.row1 {
+    padding-top: 10px;
+    padding-right: 50px
+}
+
+.row2 {
+    padding-bottom: 20px
+}
+
+.navbar-input {
+    padding: 11px 16px;
+    border-radius: 2px 0 0 2px;
+    border: 0 none;
+    outline: 0 none;
+    font-size: 15px
+}
+
+.navbar-button {
+    background-color: #e5bc41;
+    border: 1px solid #e5bc41;
+    border-radius: 0 2px 2px 0;
+    color: #565656;
+    padding: 10px 0;
+    height: 43px;
+    cursor: pointer
+}
+
+.item-number {
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, .1);
+    height: 20px;
+    padding: 3px 6px;
+    font-weight: 500;
+    display: inline-block;
+    color: #fff;
+    line-height: 12px;
+    margin-left: 10px
+}
+
+.upper-links {
+    display: inline-block;
+    padding: 0 11px;
+    line-height: 23px;
+    font-family: 'Roboto', sans-serif;
+    letter-spacing: 0;
+    color: inherit;
+    border: none;
+    outline: none;
+    font-size: 12px
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 0px
+}
+
+.dropdown:hover {
+    background-color: #fff
+}
+
+.dropdown:hover .links {
+    color: #000
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block
+}
+
+.dropdown .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    display: none;
+    background-color: #fff;
+    color: #333;
+    left: 0px;
+    border: 0;
+    border-radius: 0;
+    box-shadow: 0 4px 8px -3px #555454;
+    margin: 0;
+    padding: 0px
+}
+
+.links {
+    color: #fff;
+    text-decoration: none
+}
+
+.links:hover {
+    color: #fff;
+    text-decoration: none
+}
+
+.profile-links {
+    font-size: 12px;
+    font-family: 'Roboto', sans-serif;
+    border-bottom: 1px solid #e9e9e9;
+    box-sizing: border-box;
+    display: block;
+    padding: 0 11px;
+    line-height: 23px
+}
+
+.profile-li {
+    padding-top: 2px
+}
+
+.largenav {
+    display: none
+}
+
+.smallnav {
+    display: block
+}
+
+.smallsearch {
+    margin-left: 15px;
+    margin-top: 15px
+}
+
+.menu {
+    cursor: pointer
+}
+
+@media screen and (min-width: 768px) {
+    .largenav {
+        display: block
+    }
+
+    .smallnav {
+        display: none
+    }
+
+    .smallsearch {
+        margin: 0px
+    }
+}
+
+    <h1>Product List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Date Added</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if products %}
+                {% for product in products %}
+                    <tr>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.description }}</td>
+                        <td>${{ product.price }}</td>
+                        <td>{{ product.created_at }}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="4" style="text-align: center;">No products available</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</body>
+</html>
+
+    </style>
+</head>
+<body>
+    <div id="navbar">
+        <div class="container">
+            <ul class="upper-links">
+                <li><a href="/aboutus" class="links">Report Price Manipulation</a></li>
+                <li><a href="/aboutus" class="links">Vehicle Tracking</a></li>
+                <li><a href="/aboutus" class="links">Contact Us</a></li>
+                <li><a href="/aboutus" class="links">About Us</a></li>
+                <li><a href="/customerlogin" class="links">Login</a> | <a href="/customersignup" class="links">Sign Up</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <h1>Product List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Date Added</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if products %}
+                {% for product in products %}
+                    <tr>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.description }}</td>
+                        <td>${{ product.price }}</td>
+                        <td>{{ product.created_at }}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="4" style="text-align: center;">No products available</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</body>
+</html>
