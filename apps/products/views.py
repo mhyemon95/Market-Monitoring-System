@@ -6,6 +6,9 @@
 # from apps.Users.permissions import user_is_admin
 
 
+# Create your views here.
+def home(request):
+    return render(request, 'dashboard/home.html')
 
 # # View for creating a new product
 # @method_decorator([login_required, user_is_admin], name='dispatch')
