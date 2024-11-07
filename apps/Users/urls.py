@@ -14,6 +14,7 @@ from .views import (
     forgot_password_active_url,
     admin_activate,
     pending_user,
+    approve_user,  # Add this line for the new feature
 )
 
 urlpatterns = [
@@ -34,5 +35,6 @@ urlpatterns = [
         name="forgot_password_url",
     ),
     path("reset-password/", reset_password, name="reset_password"),
-    path("pendings/",pending_user, name="pendings"),
+    path("pendings/",pending_user, name="pending_user"),
+    path('approve_user/<uuid:user_id>/', approve_user, name='approve_user'),
 ]

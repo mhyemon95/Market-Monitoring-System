@@ -146,19 +146,26 @@ def register_whole_seller(request):
         email = request.POST["email"]
         password = request.POST["password"]
         confirm_password = request.POST["confirm_password"]
+        phone = request.POST["phone"]
+        address = request.POST["address"]
 
         if password != confirm_password:
             messages.error(request, "Passwords do not match!")
-            return redirect("register_whole_seller")
+            return redirect("register_seller")
 
         if User.objects.filter(email=email).exists():
             messages.error(request, "Email is already registered!")
             return redirect("register_whole_seller")
 
+        # Create a new student user
         new_user = User.objects.create_user(
-            email=email, password=password, role="whole_seller"
+            email=email, password=password, role="seller"
         )
+
         new_user.is_active = False
+        new_user.phone = phone
+        new_user.address = address
+        # new_user.name = name
         new_user.save()
 
         messages.success(
@@ -175,13 +182,13 @@ def register_whole_seller(request):
                 "domain": current_site.domain,
                 "uid": urlsafe_base64_encode(force_bytes(new_user.pk)),
                 "token": generate_tokens.make_token(new_user),
-                "link": request.build_absolute_uri(reverse(
+                "link": reverse(
                     "admin_activate",
                     kwargs={
                         "uidb64": urlsafe_base64_encode(force_bytes(new_user.pk)),
                         "token": generate_tokens.make_token(new_user),
                     },
-                ),)
+                ),
             },
         )
 
@@ -194,26 +201,29 @@ def register_whole_seller(request):
         email.fail_silently = True
         email.send()
 
-        return redirect("login")
-
     return render(request, "users/register_whole_seller.html")
+    
+    
 
 
-# def activate(request, uidb64, token):
-#     try:
-#         uid = force_str(urlsafe_base64_decode(uidb64))
-#         newuser = User.objects.get(pk=uid)
-#     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-#         newuser = None
 
-#     if newuser is not None and generate_tokens.check_token(newuser, token):
-#         newuser.is_active = True
-#         newuser.save()
-#         messages.success(request, "Account activated successfully!")
-#         login(request, newuser)
-#         return redirect("profile")  # Ensure 'user_profile' exists in your urls.py
-#     else:
-#         return render(request, "users/activation_failed.html")
+
+def activate(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        newuser = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        newuser = None
+
+    if newuser is not None and generate_tokens.check_token(newuser, token):
+        newuser.is_active = True
+        newuser.save()
+        messages.success(request, "Account activated successfully!")
+        login(request, newuser)
+        return redirect("profile")  # Ensure 'user_profile' exists in your urls.py
+    else:
+        return render(request, "users/activation_failed.html")
+
 
 def admin_activate(request, uidb64, token):
     try:
@@ -225,24 +235,66 @@ def admin_activate(request, uidb64, token):
     if newuser is not None and generate_tokens.check_token(newuser, token):
         newuser.is_active = False
         if request.method == "POST":
-            newuser.business_name = request.POST.get("business_name", "")
-            newuser.business_registration_number = request.POST.get("business_registration_number", "")
-            newuser.gst_number = request.POST.get("gst_number", "")
-            newuser.wholesale_license_number = request.POST.get("wholesale_license_number", "")
-
-        newuser.save()
+            newuser.business_name = request.POST["business_name"]
+            newuser.nid = request.POST["nid"]
+            newuser.tin_number = request.POST["tin_number"]
+            newuser.trede_license = request.POST["trade_license"]
+            newuser.vat_registration = request.POST["vat_registration"]
+            newuser.save()
 
         messages.success(request, "Account activated successfully!")
-        return render(request,'users/pending.html')  # Ensure 'user_profile' exists in your urls.py
+        return render(request, 'users/pending.html', {
+            'uidb64': uidb64, 'token': token  # Pass `uidb64` and `token` here
+        })
     else:
         return render(request, "users/activation_failed.html")
 
+
+
+# def admin_activate(request, uidb64, token):
+#     try:
+#         uid = force_str(urlsafe_base64_decode(uidb64))
+#         newuser = User.objects.get(pk=uid)
+#     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+#         newuser = None
+
+#     if newuser is not None and generate_tokens.check_token(newuser, token):
+#         newuser.is_active = False
+#         if request.method == "POST":
+#             newuser.business_name = request.POST.get("business_name", "")
+#             newuser.nid = request.POST.get("nid", "")
+#             newuser.tin_number = request.POST.get("tin_number", "")
+#             newuser.trade_license = request.POST.get("trade_license", "")
+#             newuser.vat_registration = request.POST.get("vat_registration", "")
+#             newuser.save()
+
+#         messages.success(request, "Account activated successfully!")
+#         return render(request,'users/pending.html')  # Ensure 'user_profile' exists in your urls.py
+#     else:
+#         return render(request, "users/activation_failed.html")
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
+
+@login_required
 def pending_user(request):
     if request.user.is_staff:
         pending_users = User.objects.filter(is_active=False)
-        return render(request,'users/pending_user.html', {'pending_users':pending_users})
+        return render(request, 'users/pending_user.html', {'pending_users': pending_users})
     else:
         return redirect('profile')
+
+@login_required
+def approve_user(request, user_id):
+    if request.user.is_staff:
+        user = get_object_or_404(User, id=user_id)
+        user.is_active = True  # Set the user's active status to True
+        user.save()
+        return redirect('pending_user')
+    else:
+        return HttpResponseForbidden("You do not have permission to perform this action.")
+
     
 
 
@@ -351,6 +403,7 @@ def user_login(request):
         if request.method == "POST":
             email = request.POST["email"]
             password = request.POST["password"]
+            
 
             try:
                 user = User.objects.get(email=email)
