@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Users</title>
+</head>
+<body>
+    {% if pending_users %}
+        <p>Your registration is pending</p>
+        <ul>
+            {% for user in pending_users %}
+                <li>Email: {{ user.email }}</li>
+                <li>Business Name: {{ user.business_name }}</li>
+                <li>Nid: {{ user.nid }}</li>
+                <li>Tin: {{ user.tin_number }}</li>
+                <li>Trade Licence Number: {{ user.trede_license }}</li>
+                <li>Vat Registration {{ user.vat_registration }}</li>
+                
+                <!-- Approved Button -->
+                <li>
+                    <form method="post" action="{% url 'approve_user' user.id %}">
+                        {% csrf_token %}
+                        <button type="submit" style="padding: 5px 10px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            Approved
+                        </button>
+                    </form>
+                </li>
+                <hr> <!-- Adds a horizontal line between users -->
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No pending users</p>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Page</title>
+    <style>
+        /* CSS Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f3f4f6;
+        }
+
+        .registration-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #333333;
+            text-align: left;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #4CAF50;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="registration-container">
+        <h2>Business Registration</h2>
+        <form action="{% url 'admin_activate' uidb64=uidb64 token=token %}" method="post">
+            {% csrf_token %}
+        
+            <label for="business_name">Business Name:</label>
+            <input type="text" id="business_name" name="business_name" required>
+        
+            <label for="nid">NID:</label>
+            <input type="text" id="nid" name="nid" required>
+        
+            <label for="tin_number">TIN Number:</label>
+            <input type="text" id="tin_number" name="tin_number" required>
+        
+            <label for="trade_license">Trade License:</label>
+            <input type="text" id="trade_license" name="trade_license" required>
+        
+            <label for="vat_registration">VAT Registration:</label>
+            <input type="text" id="vat_registration" name="vat_registration" required>
+        
+            <button type="submit">Submit</button>
+        </form>
+        
+    </div>
+</body>
+</html>

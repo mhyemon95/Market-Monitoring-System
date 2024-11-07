@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout as auth_logout
 from django.contrib import messages
@@ -11,6 +11,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from MMS import settings
+from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
@@ -82,6 +83,8 @@ def register_seller(request):
         email = request.POST["email"]
         password = request.POST["password"]
         confirm_password = request.POST["confirm_password"]
+        phone = request.POST["phone"]
+        address = request.POST["address"]
 
         if password != confirm_password:
             messages.error(request, "Passwords do not match!")
@@ -95,7 +98,11 @@ def register_seller(request):
         new_user = User.objects.create_user(
             email=email, password=password, role="seller"
         )
+
         new_user.is_active = False
+        new_user.phone = phone
+        new_user.address = address
+        # new_user.name = name
         new_user.save()
 
         messages.success(
@@ -113,7 +120,7 @@ def register_seller(request):
                 "uid": urlsafe_base64_encode(force_bytes(new_user.pk)),
                 "token": generate_tokens.make_token(new_user),
                 "link": reverse(
-                    "activate",
+                    "admin_activate",
                     kwargs={
                         "uidb64": urlsafe_base64_encode(force_bytes(new_user.pk)),
                         "token": generate_tokens.make_token(new_user),
@@ -130,8 +137,6 @@ def register_seller(request):
         )
         email.fail_silently = True
         email.send()
-
-        return redirect("login")
 
     return render(request, "users/register_seller.html")
 
@@ -141,10 +146,12 @@ def register_whole_seller(request):
         email = request.POST["email"]
         password = request.POST["password"]
         confirm_password = request.POST["confirm_password"]
+        phone = request.POST["phone"]
+        address = request.POST["address"]
 
         if password != confirm_password:
             messages.error(request, "Passwords do not match!")
-            return redirect("register_whole_seller")
+            return redirect("register_seller")
 
         if User.objects.filter(email=email).exists():
             messages.error(request, "Email is already registered!")
@@ -152,9 +159,13 @@ def register_whole_seller(request):
 
         # Create a new student user
         new_user = User.objects.create_user(
-            email=email, password=password, role="whole_seller"
+            email=email, password=password, role="seller"
         )
+
         new_user.is_active = False
+        new_user.phone = phone
+        new_user.address = address
+        # new_user.name = name
         new_user.save()
 
         messages.success(
@@ -172,7 +183,7 @@ def register_whole_seller(request):
                 "uid": urlsafe_base64_encode(force_bytes(new_user.pk)),
                 "token": generate_tokens.make_token(new_user),
                 "link": reverse(
-                    "activate",
+                    "admin_activate",
                     kwargs={
                         "uidb64": urlsafe_base64_encode(force_bytes(new_user.pk)),
                         "token": generate_tokens.make_token(new_user),
@@ -190,9 +201,11 @@ def register_whole_seller(request):
         email.fail_silently = True
         email.send()
 
-        return redirect("login")
+    return render(request, "users/register_whole_seller.html")
+    
+    
 
-    return render(request, "users/whole_seller.html")
+
 
 
 def activate(request, uidb64, token):
@@ -210,6 +223,79 @@ def activate(request, uidb64, token):
         return redirect("profile")  # Ensure 'user_profile' exists in your urls.py
     else:
         return render(request, "users/activation_failed.html")
+
+
+def admin_activate(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        newuser = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        newuser = None
+
+    if newuser is not None and generate_tokens.check_token(newuser, token):
+        newuser.is_active = False
+        if request.method == "POST":
+            newuser.business_name = request.POST["business_name"]
+            newuser.nid = request.POST["nid"]
+            newuser.tin_number = request.POST["tin_number"]
+            newuser.trede_license = request.POST["trade_license"]
+            newuser.vat_registration = request.POST["vat_registration"]
+            newuser.save()
+
+        messages.success(request, "Account activated successfully!")
+        return render(request, 'users/pending.html', {
+            'uidb64': uidb64, 'token': token  # Pass `uidb64` and `token` here
+        })
+    else:
+        return render(request, "users/activation_failed.html")
+
+
+
+# def admin_activate(request, uidb64, token):
+#     try:
+#         uid = force_str(urlsafe_base64_decode(uidb64))
+#         newuser = User.objects.get(pk=uid)
+#     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+#         newuser = None
+
+#     if newuser is not None and generate_tokens.check_token(newuser, token):
+#         newuser.is_active = False
+#         if request.method == "POST":
+#             newuser.business_name = request.POST.get("business_name", "")
+#             newuser.nid = request.POST.get("nid", "")
+#             newuser.tin_number = request.POST.get("tin_number", "")
+#             newuser.trade_license = request.POST.get("trade_license", "")
+#             newuser.vat_registration = request.POST.get("vat_registration", "")
+#             newuser.save()
+
+#         messages.success(request, "Account activated successfully!")
+#         return render(request,'users/pending.html')  # Ensure 'user_profile' exists in your urls.py
+#     else:
+#         return render(request, "users/activation_failed.html")
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
+
+@login_required
+def pending_user(request):
+    if request.user.is_staff:
+        pending_users = User.objects.filter(is_active=False)
+        return render(request, 'users/pending_user.html', {'pending_users': pending_users})
+    else:
+        return redirect('profile')
+
+@login_required
+def approve_user(request, user_id):
+    if request.user.is_staff:
+        user = get_object_or_404(User, id=user_id)
+        user.is_active = True  # Set the user's active status to True
+        user.save()
+        return redirect('pending_user')
+    else:
+        return HttpResponseForbidden("You do not have permission to perform this action.")
+
+    
 
 
 def forgot_password(request):
@@ -317,6 +403,7 @@ def user_login(request):
         if request.method == "POST":
             email = request.POST["email"]
             password = request.POST["password"]
+            
 
             try:
                 user = User.objects.get(email=email)
@@ -385,6 +472,7 @@ def update_password(request):
                 print("User not authenticated!")
 
         return render(request, "users/update_password.html")
+
 
 
 # def _logout_previous_sessions(user):

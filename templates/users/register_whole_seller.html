@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seller Registration</title>
+    <title>whole Seller Registration</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -106,7 +106,7 @@
 <body>
 
 <div class="container">
-    <h2>Seller Registration</h2>
+    <h2>Whole Seller Registration</h2>
 
     <!-- Success/Error Messages -->
     <div class="error-message">
@@ -117,7 +117,7 @@
         {% endif %}
     </div>
 
-    <form method="POST" action="{% url 'register_seller' %}">
+    <form method="POST" action="{% url 'register_whole_seller' %}">
         {% csrf_token %} <!-- CSRF Token for protection -->
 
         <label for="name">Full Name:</label>
@@ -137,7 +137,7 @@
 
         <label for="address">Address:</label>
         <textarea name="address" id="address" required></textarea>
-        <button type="submit">Register as Seller</button>
+        <button type="submit">Register as Whole Seller</button>
     </form>
     
 
