@@ -23,8 +23,8 @@
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Product
-from .forms import ProductForm
+from .models import Product, ProductSellPrice
+from .forms import ProductForm, ProductSearchForm
 from apps.Users.permissions import user_is_admin
 
 # View for creating a new product
