@@ -18,3 +18,6 @@ def dashboard_home(request):
     #     'new_users': new_users_today,
     # }
     return render(request, 'dashboard/home.html')
+def price_view(request):
+    
+    return render(request, 'dashboard/product_list.html')
