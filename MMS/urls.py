@@ -18,11 +18,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from apps.dashboard.views import dashboard_home
+from django.conf import settings
+from django.conf.urls.static import static
+from apps.dashboard.views import price_view
+
+
 urlpatterns = [
+    path("admin/", admin.site.urls),
     path('dashboard/', include('apps.dashboard.urls')),
-    path("",dashboard_home, name='dashboard_home')
+    path('Price_list/',price_view,name='price_list'),
+    path("",dashboard_home, name='dashboard_home'),
+    path("users/", include("apps.Users.urls")),
 
-    
 ]
-
-
